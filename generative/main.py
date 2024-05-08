@@ -101,6 +101,7 @@ if __name__ == '__main__':
     for train_cls_i in train_list:
         train_cls_i = train_cls_i.lower()
         candidate_prompt += ['A photo of a male {}.'.format(train_cls_i), 'A photo of a female {}.'.format(train_cls_i)]
+        candidate_prompt += ['A photo of a black {}.'.format(train_cls_i), 'A photo of a white {}.'.format(train_cls_i)]
         S += [[counter, counter + 1]]
         counter += 2
 
