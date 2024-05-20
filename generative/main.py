@@ -104,6 +104,7 @@ if __name__ == '__main__':
         candidate_prompt += ['A photo of a black {}.'.format(train_cls_i), 'A photo of a white {}.'.format(train_cls_i)]
         S += [[counter, counter + 1]]
         counter += 2
+        print(candidate_prompt)
 
     candidate_input = tokenizer(candidate_prompt, padding="max_length", max_length=tokenizer.model_max_length, truncation=True, return_tensors="pt")
     with torch.no_grad():

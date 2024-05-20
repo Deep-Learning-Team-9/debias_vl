@@ -1,0 +1,5 @@
+output_*
+__pycache__/
+*.jpg
+discriminative/datasets/*
+discriminative/embeddings/*

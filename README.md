@@ -27,6 +27,19 @@ Machine learning models have been shown to inherit biases from their training da
 - clip
 - transformers
 
+```sh
+conda activate myenv
+
+conda install scikit-learn
+
+pip install ftfy regex tqdm
+pip install git+https://github.com/openai/CLIP.git
+
+conda install pytorch==1.10.1 torchvision==0.11.2 torchaudio==0.10.1 cudatoolkit=11.3 -c pytorch
+
+etc...
+```
+
 ## Code
 Check the ```discriminative``` and ```generative``` folders.
 
