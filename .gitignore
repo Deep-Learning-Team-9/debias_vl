@@ -3,3 +3,4 @@ __pycache__/
 *.jpg
 discriminative/datasets/*
 discriminative/embeddings/*
+venv
