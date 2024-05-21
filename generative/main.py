@@ -57,8 +57,6 @@ def get_A(z_0, z_1, z_2, z_3):
     )
 
 
-
-
 # def get_M(embeddings, S):
 #     d = embeddings.shape[1]
 #     M = np.zeros((d, d))
@@ -84,6 +82,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Debiased Diffusion Models')
     parser.add_argument('--cls', default="doctor", type=str, help='target class name')
     parser.add_argument('--lam', default=500, type=float, help='regualrizer constant')
+    parser.add_argument('--debias-method', default="multi", type=str, help='debias method to use, pick "single" or "multi"')
     parser.add_argument(
         "--revision",
         type=str,
@@ -199,7 +198,7 @@ if __name__ == '__main__':
 
 
     # Diffusion Sampling
-    save_dir = "output_" + args.cls + "_lam" + str(args.lam)
+    save_dir = f"output_{args.cls}_{args.debias_method}_lam{args.lam}"
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
