@@ -17,10 +17,6 @@ import os
 from job_list import train_list, test_list
 
 
-# def get_A(z_i, z_j):
-#     z_i = z_i[:, None]
-#     z_j = z_j[:, None]
-#     return (np.matmul(z_i, z_i.T) + np.matmul(z_j, z_j.T) - np.matmul(z_i, z_j.T) - np.matmul(z_j, z_i.T))
 # def get_A(z_0, z_1, z_2, z_3):
 #     z_0 = z_0[:, None]
 #     z_1 = z_1[:, None]
@@ -34,37 +30,42 @@ from job_list import train_list, test_list
 #         np.matmul(z_2, z_3.T) - np.matmul(z_3, z_2.T)
 #     )
 
-def get_A(z_0, z_1, z_2, z_3):
-    z_0 = z_0[:, None]
-    z_1 = z_1[:, None]
-    z_2 = z_2[:, None]
-    z_3 = z_3[:, None]
-    
-    return (
-        np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) +
-        np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T) +
-        np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) +
-        np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T) +
-        np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) +
-        np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T) -
 
-        np.matmul(z_0, z_1.T) - np.matmul(z_1, z_0.T) -
-        np.matmul(z_0, z_2.T) - np.matmul(z_2, z_0.T) -
-        np.matmul(z_0, z_3.T) - np.matmul(z_3, z_0.T) -
-        np.matmul(z_1, z_2.T) - np.matmul(z_2, z_1.T) -
-        np.matmul(z_1, z_3.T) - np.matmul(z_3, z_1.T) -
-        np.matmul(z_2, z_3.T) - np.matmul(z_3, z_2.T)
-    )
+def get_M_single(embeddings, S):
+    def get_A(z_i, z_j):
+        z_i = z_i[:, None]
+        z_j = z_j[:, None]
+        return (np.matmul(z_i, z_i.T) + np.matmul(z_j, z_j.T) - np.matmul(z_i, z_j.T) - np.matmul(z_j, z_i.T))
 
+    d = embeddings.shape[1]
+    M = np.zeros((d, d))
+    for s in S:
+        M  += get_A(embeddings[s[0]], embeddings[s[1]])
+    return M / len(S)
 
-# def get_M(embeddings, S):
-#     d = embeddings.shape[1]
-#     M = np.zeros((d, d))
-#     for s in S:
-#         M  += get_A(embeddings[s[0]], embeddings[s[1]])
-#     return M / len(S)
+def get_M_multiple(embeddings, S):
+    def get_A(z_0, z_1, z_2, z_3):
+        z_0 = z_0[:, None]
+        z_1 = z_1[:, None]
+        z_2 = z_2[:, None]
+        z_3 = z_3[:, None]
+        
+        return (
+            np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) +
+            np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T) +
+            np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) +
+            np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T) +
+            np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) +
+            np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T) -
 
-def get_M(embeddings, S):
+            np.matmul(z_0, z_1.T) - np.matmul(z_1, z_0.T) -
+            np.matmul(z_0, z_2.T) - np.matmul(z_2, z_0.T) -
+            np.matmul(z_0, z_3.T) - np.matmul(z_3, z_0.T) -
+            np.matmul(z_1, z_2.T) - np.matmul(z_2, z_1.T) -
+            np.matmul(z_1, z_3.T) - np.matmul(z_3, z_1.T) -
+            np.matmul(z_2, z_3.T) - np.matmul(z_3, z_2.T)
+        )
+
     d = embeddings.shape[1]
     M = np.zeros((d, d))
     for s in S:
@@ -82,7 +83,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Debiased Diffusion Models')
     parser.add_argument('--cls', default="doctor", type=str, help='target class name')
     parser.add_argument('--lam', default=500, type=float, help='regualrizer constant')
-    parser.add_argument('--debias-method', default="multi", type=str, help='debias method to use, pick "single" or "multi"')
+    parser.add_argument('--debias-method', default="multiple", type=str, help='debias method to use. Pick "single" or "multiple".')
     parser.add_argument(
         "--revision",
         type=str,
@@ -104,6 +105,12 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
+    if args.debias_method == "single":
+        get_M = get_M_single
+    elif args.debias_method == "multiple":
+        get_M = get_M_multiple
+    else:
+        raise Exception("Debias method wrong.")
 
     # 1. Load the autoencoder model which will be used to decode the latents into image space. 
     vae = AutoencoderKL.from_pretrained(
@@ -145,13 +152,24 @@ if __name__ == '__main__':
     candidate_prompt = []
     S = []
     counter = 0
-    for train_cls_i in train_list:
-        train_cls_i = train_cls_i.lower()
-        candidate_prompt += ['A photo of a black male {}.'.format(train_cls_i), 'A photo of a black female {}.'.format(train_cls_i)]
-        candidate_prompt += ['A photo of a white male {}.'.format(train_cls_i), 'A photo of a white female {}.'.format(train_cls_i)]
-        S.append([counter, counter + 1, counter + 2, counter + 3])
-        counter += 4
-        print(candidate_prompt)
+
+    if args.debias_method == "single":
+        for train_cls_i in train_list:
+            train_cls_i = train_cls_i.lower()
+            candidate_prompt += ['A photo of a male {}.'.format(train_cls_i), 'A photo of a female {}.'.format(train_cls_i)]
+            S.append([counter, counter + 1])
+            counter += 2
+
+    elif args.debias_method == "multiple":
+        for train_cls_i in train_list:
+            train_cls_i = train_cls_i.lower()
+            candidate_prompt += ['A photo of a black male {}.'.format(train_cls_i), 'A photo of a black female {}.'.format(train_cls_i)]
+            candidate_prompt += ['A photo of a white male {}.'.format(train_cls_i), 'A photo of a white female {}.'.format(train_cls_i)]
+            S.append([counter, counter + 1, counter + 2, counter + 3])
+            counter += 4
+    else:
+        raise Exception("Debias method wrong.")
+
 
     candidate_input = tokenizer(candidate_prompt, padding="max_length", max_length=tokenizer.model_max_length, truncation=True, return_tensors="pt")
     with torch.no_grad():
