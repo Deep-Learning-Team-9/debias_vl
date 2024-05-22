@@ -156,7 +156,8 @@ if __name__ == '__main__':
     if args.debias_method == "single":
         for train_cls_i in train_list:
             train_cls_i = train_cls_i.lower()
-            candidate_prompt += ['A photo of a male {}.'.format(train_cls_i), 'A photo of a female {}.'.format(train_cls_i)]
+            for axis in ["male", "female"]:
+                candidate_prompt.append(f"A photo of a {axis} {train_cls_i}")
             S.append([counter, counter + 1])
             counter += 2
 
