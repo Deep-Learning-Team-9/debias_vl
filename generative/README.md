@@ -8,7 +8,8 @@ Flags:
 
 For instance, to reproduce the experiments, run
 ```
-python main.py --cls doctor --lam 500
+python main.py --cls doctor --lam 500 --debias-method multiple
+python main.py --cls doctor --lam 500 --debias-method single
 ```
 
 
