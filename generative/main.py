@@ -163,8 +163,8 @@ if __name__ == '__main__':
     elif args.debias_method == "multiple":
         for train_cls_i in train_list:
             train_cls_i = train_cls_i.lower()
-            candidate_prompt += ['A photo of a black male {}.'.format(train_cls_i), 'A photo of a black female {}.'.format(train_cls_i)]
-            candidate_prompt += ['A photo of a white male {}.'.format(train_cls_i), 'A photo of a white female {}.'.format(train_cls_i)]
+            for axis in ["black male", "black female", "white male", "white female"]:
+                candidate_prompt.append(f"A photo of a {axis} {train_cls_i}")
             S.append([counter, counter + 1, counter + 2, counter + 3])
             counter += 4
     else:
