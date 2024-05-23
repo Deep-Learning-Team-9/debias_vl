@@ -51,12 +51,7 @@ def get_M_multiple(embeddings, S):
         z_3 = z_3[:, None]
         
         return (
-            np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) +
-            np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T) +
-            np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) +
-            np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T) +
-            np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) +
-            np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T) -
+            3 * (np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) + np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T)) -
 
             np.matmul(z_0, z_1.T) - np.matmul(z_1, z_0.T) -
             np.matmul(z_0, z_2.T) - np.matmul(z_2, z_0.T) -
