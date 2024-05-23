@@ -8,9 +8,14 @@ Flags:
 
 For instance, to reproduce the experiments, run
 ```
-python main.py --cls doctor --lam 500 --debias-method multiple
-python main.py --cls doctor --lam 500 --debias-method single
+python main.py --cls doctor --lam 500 --debias-method multiple --preprompt A
+python main.py --cls doctor --lam 500 --debias-method single -- preprompt B
 ```
+
+preprompt
+A: A photo of a
+B: This is a 
+C: Photo cropped face of a
 
 
 ## Acknowledgements
