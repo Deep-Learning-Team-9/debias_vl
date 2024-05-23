@@ -5,8 +5,9 @@ PREPROMPTS=("A" "B" "C")
 
 for CLS in "${CLASSES[@]}"; do
   for PREPROMPT in "${PREPROMPTS[@]}"; do
-    python main.py --cls "$CLS" --debias-method single --lam 0 --preprompt "$PREPROMPT"
-    python main.py --cls "$CLS" --debias-method single --lam 500 --preprompt "$PREPROMPT"
+    python main.py --cls "$CLS" --debias-method singleGender --lam 0 --preprompt "$PREPROMPT"
+    python main.py --cls "$CLS" --debias-method singleRace --lam 500 --preprompt "$PREPROMPT"
+    python main.py --cls "$CLS" --debias-method singleGender --lam 500 --preprompt "$PREPROMPT"
     python main.py --cls "$CLS" --debias-method pair --lam 500 --preprompt "$PREPROMPT"
     python main.py --cls "$CLS" --debias-method multiple --multiple-param simple --lam 500 --preprompt "$PREPROMPT"
     python main.py --cls "$CLS" --debias-method multiple --multiple-param composite --lam 500 --preprompt "$PREPROMPT"

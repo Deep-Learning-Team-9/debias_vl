@@ -77,7 +77,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Debiased Diffusion Models')
     parser.add_argument('--cls', default="doctor", type=str, help='target class name')
     parser.add_argument('--lam', default=500, type=float, help='regualrizer constant')
-    parser.add_argument('--debias-method', default="multiple", type=str, help='debias method to use. Pick "single" or "multiple" or "pair".')
+    parser.add_argument('--debias-method', default="multiple", type=str, help='debias method to use. Pick "singleRace", "singleGender" or "multiple" or "pair".')
     parser.add_argument('--multiple-param', default=None, type=str, help='pick either "composite" or "simple"')
     parser.add_argument('--preprompt', default="A", type=str, help='debias preprompt to use. Input preprompt to use.')
     # A: A photo of a
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    if args.debias_method == "single":
+    if args.debias_method == "singleRace" or args.debias_method == "singleGender":
         get_M = get_M_single
     elif args.debias_method == "multiple":
         get_M = get_M_multiple
@@ -164,10 +164,17 @@ if __name__ == '__main__':
     S = []
     counter = 0
 
-    if args.debias_method == "single":
+    if args.debias_method == "singleRace" or args.debias_method == "singleGender":
+        if args.debias_method == "singleRace":
+            axes = ["white", "black"]
+        elif args.debias_method == "singleGender":
+            axes = ["male", "female"]
+        else:
+            raise Exception("Corrupted!")
+        
         for train_cls_i in train_list:
             train_cls_i = train_cls_i.lower()
-            for axis in ["male", "female"]:
+            for axis in axes:
                 candidate_prompt.append(f"{preprompt} {axis} {train_cls_i}")
             S.append([counter, counter + 1])
             counter += 2
@@ -252,7 +259,7 @@ if __name__ == '__main__':
         save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_{args.multiple_param}_lam{args.lam}"
     elif args.debias_method == "pair":
         save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_lam{args.lam}"
-    elif args.debias_method == "single":
+    elif args.debias_method == "singleRace" or args.debias_method == "singleGender":
         save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_lam{args.lam}"
     else:
         raise Exception("Corrupted!")
@@ -261,7 +268,7 @@ if __name__ == '__main__':
         os.mkdir(save_dir)
 
 
-    for i in tqdm(range(100)):
+    for i in tqdm(range(1)):
         # Generate Initial Noise
         latents = torch.randn(
                    (batch_size, unet.in_channels, height // 8, width // 8),
