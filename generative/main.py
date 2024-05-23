@@ -52,12 +52,12 @@ def get_M_multiple(embeddings, S):
         
         return (
             3 * (np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) + np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T)) -
-            2 * np.matmul(z_0, z_1.T) -
-            2 * np.matmul(z_0, z_2.T) -
-            2 * np.matmul(z_0, z_3.T) -
-            2 * np.matmul(z_1, z_2.T) -
-            2 * np.matmul(z_1, z_3.T) -
-            2 * np.matmul(z_2, z_3.T)
+            np.matmul(z_0, z_1.T) - np.matmul(z_1, z_0.T) -
+            np.matmul(z_0, z_2.T) - np.matmul(z_2, z_0.T) -
+            np.matmul(z_0, z_3.T) - np.matmul(z_3, z_0.T) -
+            np.matmul(z_1, z_2.T) - np.matmul(z_2, z_1.T) -
+            np.matmul(z_1, z_3.T) - np.matmul(z_3, z_1.T) -
+            np.matmul(z_2, z_3.T) - np.matmul(z_3, z_2.T)
         )
 
     d = embeddings.shape[1]
@@ -257,7 +257,6 @@ if __name__ == '__main__':
     else:
         raise Exception("Corrupted!")
 
-    save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_lam{args.lam}"
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
