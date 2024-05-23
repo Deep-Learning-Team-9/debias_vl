@@ -84,6 +84,7 @@ if __name__ == '__main__':
     parser.add_argument('--cls', default="doctor", type=str, help='target class name')
     parser.add_argument('--lam', default=500, type=float, help='regualrizer constant')
     parser.add_argument('--debias-method', default="multiple", type=str, help='debias method to use. Pick "single" or "multiple".')
+    parser.add_argument('--multiple-param', default=None, type=str, help='pick either "composite" or "simple"')
     parser.add_argument('--preprompt', default="A", type=str, help='debias preprompt to use. Input preprompt to use.')
     # A: A photo of a
     # B: This is a 
@@ -176,9 +177,16 @@ if __name__ == '__main__':
             counter += 2
 
     elif args.debias_method == "multiple":
+        if args.multiple_param == "composite":
+            axes =["black male", "black female", "white male", "white female"] 
+        elif args.multiple_param == "simple":
+            axes =["black", "white", "female", "male"] 
+        else:
+            raise Exception("Corrupted!")
+
         for train_cls_i in train_list:
             train_cls_i = train_cls_i.lower()
-            for axis in ["black male", "black female", "white male", "white female"]:
+            for axis in axes:
                 candidate_prompt.append(f"{preprompt} {axis} {train_cls_i}")
             S.append([counter, counter + 1, counter + 2, counter + 3])
             counter += 4
@@ -232,6 +240,13 @@ if __name__ == '__main__':
 
 
     # Diffusion Sampling
+    if args.debias_method == "multiple":
+        save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_{args.multiple_param}_lam{args.lam}"
+    elif args.debias_method == "single":
+        save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_lam{args.lam}"
+    else:
+        raise Exception("Corrupted!")
+
     save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_lam{args.lam}"
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
