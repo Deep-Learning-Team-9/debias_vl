@@ -52,13 +52,12 @@ def get_M_multiple(embeddings, S):
         
         return (
             3 * (np.matmul(z_0, z_0.T) + np.matmul(z_1, z_1.T) + np.matmul(z_2, z_2.T) + np.matmul(z_3, z_3.T)) -
-
-            np.matmul(z_0, z_1.T) - np.matmul(z_1, z_0.T) -
-            np.matmul(z_0, z_2.T) - np.matmul(z_2, z_0.T) -
-            np.matmul(z_0, z_3.T) - np.matmul(z_3, z_0.T) -
-            np.matmul(z_1, z_2.T) - np.matmul(z_2, z_1.T) -
-            np.matmul(z_1, z_3.T) - np.matmul(z_3, z_1.T) -
-            np.matmul(z_2, z_3.T) - np.matmul(z_3, z_2.T)
+            2 * np.matmul(z_0, z_1.T) -
+            2 * np.matmul(z_0, z_2.T) -
+            2 * np.matmul(z_0, z_3.T) -
+            2 * np.matmul(z_1, z_2.T) -
+            2 * np.matmul(z_1, z_3.T) -
+            2 * np.matmul(z_2, z_3.T)
         )
 
     d = embeddings.shape[1]
@@ -78,7 +77,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Debiased Diffusion Models')
     parser.add_argument('--cls', default="doctor", type=str, help='target class name')
     parser.add_argument('--lam', default=500, type=float, help='regualrizer constant')
-    parser.add_argument('--debias-method', default="multiple", type=str, help='debias method to use. Pick "single" or "multiple".')
+    parser.add_argument('--debias-method', default="multiple", type=str, help='debias method to use. Pick "single" or "multiple" or "pair".')
     parser.add_argument('--multiple-param', default=None, type=str, help='pick either "composite" or "simple"')
     parser.add_argument('--preprompt', default="A", type=str, help='debias preprompt to use. Input preprompt to use.')
     # A: A photo of a
@@ -110,6 +109,8 @@ if __name__ == '__main__':
         get_M = get_M_single
     elif args.debias_method == "multiple":
         get_M = get_M_multiple
+    elif args.debias_method == "pair":
+        get_M = get_M_single
     else:
         raise Exception("Debias method wrong.")
 
@@ -170,6 +171,18 @@ if __name__ == '__main__':
                 candidate_prompt.append(f"{preprompt} {axis} {train_cls_i}")
             S.append([counter, counter + 1])
             counter += 2
+
+    elif args.debias_method == "pair":
+        for train_cls_i in train_list:
+            train_cls_i = train_cls_i.lower()
+            for axis in ["male", "female"]:
+                candidate_prompt.append(f"{preprompt} {axis} {train_cls_i}")
+            for axis in ["black", "white"]:
+                candidate_prompt.append(f"{preprompt} {axis} {train_cls_i}")
+            S.append([counter, counter + 1])
+            S.append([counter + 2, counter + 3])
+            counter += 4
+
 
     elif args.debias_method == "multiple":
         if args.multiple_param == "composite":
@@ -237,6 +250,8 @@ if __name__ == '__main__':
     # Diffusion Sampling
     if args.debias_method == "multiple":
         save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_{args.multiple_param}_lam{args.lam}"
+    elif args.debias_method == "pair":
+        save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_lam{args.lam}"
     elif args.debias_method == "single":
         save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_lam{args.lam}"
     else:
