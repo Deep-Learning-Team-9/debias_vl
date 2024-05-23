@@ -268,7 +268,7 @@ if __name__ == '__main__':
         os.mkdir(save_dir)
 
 
-    for i in tqdm(range(1)):
+    for i in tqdm(range(10)):
         # Generate Initial Noise
         latents = torch.randn(
                    (batch_size, unet.in_channels, height // 8, width // 8),
