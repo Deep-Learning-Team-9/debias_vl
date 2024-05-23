@@ -84,6 +84,11 @@ if __name__ == '__main__':
     parser.add_argument('--cls', default="doctor", type=str, help='target class name')
     parser.add_argument('--lam', default=500, type=float, help='regualrizer constant')
     parser.add_argument('--debias-method', default="multiple", type=str, help='debias method to use. Pick "single" or "multiple".')
+    parser.add_argument('--preprompt', default="A", type=str, help='debias preprompt to use. Input preprompt to use.')
+    # A: A photo of a
+    # B: This is a 
+    # C: Photo cropped face of a
+
     parser.add_argument(
         "--revision",
         type=str,
@@ -111,6 +116,15 @@ if __name__ == '__main__':
         get_M = get_M_multiple
     else:
         raise Exception("Debias method wrong.")
+
+    if args.preprompt == "A":
+        preprompt = "A photo of a"
+    elif args.preprompt == "B":
+        preprompt = "This is a"
+    elif args.preprompt == "C":
+        preprompt = "Photo cropped face of a"
+    else:
+        raise Exception("Preprompt corrupted!!")
 
     # 1. Load the autoencoder model which will be used to decode the latents into image space. 
     vae = AutoencoderKL.from_pretrained(
@@ -157,7 +171,7 @@ if __name__ == '__main__':
         for train_cls_i in train_list:
             train_cls_i = train_cls_i.lower()
             for axis in ["male", "female"]:
-                candidate_prompt.append(f"A photo of a {axis} {train_cls_i}")
+                candidate_prompt.append(f"{preprompt} {axis} {train_cls_i}")
             S.append([counter, counter + 1])
             counter += 2
 
@@ -165,7 +179,7 @@ if __name__ == '__main__':
         for train_cls_i in train_list:
             train_cls_i = train_cls_i.lower()
             for axis in ["black male", "black female", "white male", "white female"]:
-                candidate_prompt.append(f"A photo of a {axis} {train_cls_i}")
+                candidate_prompt.append(f"{preprompt} {axis} {train_cls_i}")
             S.append([counter, counter + 1, counter + 2, counter + 3])
             counter += 4
     else:
@@ -186,7 +200,8 @@ if __name__ == '__main__':
 
 
     # Language Prompt
-    prompt = ["A photo of a " + args.cls + "."]
+    prompt = [f"{preprompt} {args.cls}."]
+    print(prompt)
     print("Prompt: {}".format(prompt))
 
     height = 512                        # default height of Stable Diffusion
@@ -217,7 +232,7 @@ if __name__ == '__main__':
 
 
     # Diffusion Sampling
-    save_dir = f"output_{args.cls}_{args.debias_method}_lam{args.lam}"
+    save_dir = f"output_{args.cls}_{args.debias_method}_type{args.preprompt}_lam{args.lam}"
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
