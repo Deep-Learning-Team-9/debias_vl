@@ -15,6 +15,23 @@ import argparse
 import os
 
 from job_list import train_list, test_list
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.patches import FancyArrowPatch
+from mpl_toolkits.mplot3d import proj3d
+
+class Arrow3D(FancyArrowPatch):
+    def __init__(self, xs, ys, zs, *args, **kwargs):
+        super().__init__((0,0), (0,0), *args, **kwargs)
+        self._verts3d = xs, ys, zs
+
+    def do_3d_projection(self, renderer=None):
+        xs3d, ys3d, zs3d = self._verts3d
+        xs, ys, zs = proj3d.proj_transform(xs3d, ys3d, zs3d, self.axes.M)
+        self.set_positions((xs[0],ys[0]),(xs[1],ys[1]))
+
+        return np.min(zs)
 
 
 # def get_A(z_0, z_1, z_2, z_3):
@@ -221,6 +238,87 @@ if __name__ == '__main__':
     P = np.linalg.inv(G)
     P = torch.tensor(P).cuda()
 
+    job_title = "terrorist"
+    method = "simple"
+    
+    picture_title = f"visualized_embedding_{job_title}_{method}"
+    prompt_list = []
+
+    if method == "composite":
+        for race in ["arabian", "white"]:
+            for gender in ["female", "male"]:
+                prompt_list.append(f"A photo of a {race} {gender} {job_title}")
+    elif method == "simple":
+        for bias in ["arabian", "white", "female", "male"]:
+            prompt_list.append(f"A photo of a {bias} {job_title}")
+
+    
+    prompt_list.append(f"A photo of a {job_title}")
+
+
+    inputs = tokenizer(prompt_list, padding="max_length", max_length=tokenizer.model_max_length, truncation=True, return_tensors="pt")
+    with torch.no_grad():
+        embeddings = text_encoder(inputs.input_ids.to(torch_device))[0].cpu().numpy()
+    embeddings = embeddings[torch.arange(embeddings.shape[0]), inputs['input_ids'].argmax(-1)]
+
+    #print(tokenizer(["A photo of a black nurse", "A photo of a white nurse", "A photo of a female nurse", "A photo of a male nurse"])["input_ids"])
+    #embeddings = torch.tensor(tokenizer(["A photo of a black nurse", "A photo of a white nurse", "A photo of a female nurse", "A photo of a male nurse"])["input_ids"])
+    tsne = TSNE(n_components=3, random_state=42, perplexity=3)
+
+    # Define Text Embedding
+    text_input = tokenizer([prompt_list[-1]], padding="max_length", max_length=tokenizer.model_max_length, truncation=True, return_tensors="pt")
+
+    with torch.no_grad():
+      text_embeddings = text_encoder(text_input.input_ids.to(torch_device))[0]
+    text_embeddings = text_embeddings[torch.arange(text_embeddings.shape[0]), text_input['input_ids'].argmax(-1)]
+
+    # Debias Text Embedding
+    text_embeddings = torch.matmul(text_embeddings, P.T.float())
+
+    embeddings = np.array([embeddings[0], embeddings[1], embeddings[2], embeddings[3], embeddings[4], text_embeddings.cpu().numpy()[0]])
+    embeddings_3d = tsne.fit_transform(embeddings)
+
+
+
+    # 2차원 그래프로 시각화
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    limit = 400
+    ax.axes.set_xlim3d(left=-limit, right=limit)
+    ax.axes.set_ylim3d(bottom=-limit, top=limit)
+    ax.axes.set_zlim3d(bottom=-limit, top=limit)
+    arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
+    original_arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='r', shrinkA=0, shrinkB=0, label="original")
+    modified_arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='b', shrinkA=0, shrinkB=0, label="modified")
+
+    for i, point in enumerate(embeddings_3d):
+        if i == 0:
+            arrow_prop_dict["color"] = "k"
+            arrow = Arrow3D([0, point[0]], [0, point[1]], [0, point[2]], **arrow_prop_dict)
+        elif i == 1:
+            arrow_prop_dict["color"] = "m"
+            arrow = Arrow3D([0, point[0]], [0, point[1]], [0, point[2]], **arrow_prop_dict)
+        elif i == 2:
+            arrow_prop_dict["color"] = "y"
+            arrow = Arrow3D([0, point[0]], [0, point[1]], [0, point[2]], **arrow_prop_dict)
+        elif i == 3:
+            arrow_prop_dict["color"] = "b"
+            arrow = Arrow3D([0, point[0]], [0, point[1]], [0, point[2]], **arrow_prop_dict)
+        elif i == 4:
+            arrow = Arrow3D([0, point[0]], [0, point[1]], [0, point[2]], **original_arrow_prop_dict)
+        elif i == 5:
+            arrow = Arrow3D([0, point[0]], [0, point[1]], [0, point[2]], **modified_arrow_prop_dict)
+        else:
+            arrow = Arrow3D([0, point[0]], [0, point[1]], [0, point[2]], **arrow_prop_dict)
+            plt.legend(handles = [arrow])
+
+        ax.add_artist(arrow)
+
+    ax.set_title('3D Visualization of Embeddings using t-SNE')
+    plt.legend()
+    plt.savefig(picture_title)
+
+    exit(1)
 
     # Language Prompt
     prompt = [f"{preprompt} {args.cls}."]
