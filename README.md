@@ -18,6 +18,24 @@ The code has only been tested with the environment list below:
 
 ## Procedure
 
+1. Move to `./generative` which is [Stable Diffusion v2.1](https://huggingface.co/stabilityai/stable-diffusion-2-1)
+2. Run the following script and detail flag explain is that
+
+Flags:
+  - `--cls`: select the target class, e.g., doctor.
+  - `--lam`: hyperparameter lambda of debiasing algorithm
+
+For instance, to reproduce the experiments, run
+
+```sh
+python main.py --cls doctor --lam 500 --debias-method multiple --preprompt A
+python main.py --cls doctor --lam 500 --debias-method single -- preprompt B
+```
+
+preprompt
+- `A: A photo of a`
+- `B: This is a `
+- `C: Photo cropped face of a`
 
 ## Research
 
