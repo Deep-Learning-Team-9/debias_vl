@@ -22,29 +22,34 @@ The code has only been tested with the below environment and this can set by `re
 
 2. Move to `./generative`
 
-3. Run following or customized commend
+3. Run following or user customized commend, below commends is example
 
 ```sh
-python main.py --cls Nurse --lam 500 --debias-method multiple --preprompt A
-python main.py --cls Nurse --lam 500 --debias-method singleRace --preprompt B
+    python main.py --cls "Nurse" --debias-method singleGender --lam 0 --preprompt A
+    python main.py --cls "Florist" --debias-method singleRace --lam 500 --preprompt A
+    python main.py --cls "HollywoodActor" --debias-method singleGender --lam 500 --preprompt A
+    python main.py --cls "Nurse" --debias-method pair --lam 500 --preprompt A
+    python main.py --cls "Florist" --debias-method multiple --multiple-param simple --lam 500 --preprompt A
+    python main.py --cls "HollywoodActor" --debias-method multiple --multiple-param composite --lam 500 --preprompt A
 ```
 
-This is detail explanation of flags
-  - `--cls`: Select the target class
+- This is detail explanation of flags
+  - `--cls`: Select the target class that user what to test for any job
     - e.g., Florist, HollywoodActor, Doctor
   - `--lam`: Hyperparameter lambda of debiasing algorithm
     - high lambda value means high level debiasing
   - `--debias_method`: Choice multi-vector or single-vector
     - `singleRace`
     - `singleGender`
-    - `multiple`
-    - `composite`
+    - `multiple --multiple-param composite`
+    -  `multiple --multiple-param simple`
     - `pair`
   - `--preprompt`: Type of prompt senteces
     - `A`: "A photo of a"
     - `B`: "This is a"
     - `C`: "Photo cropped face of a"
 
+4. Experiments results will be shown in generative folder
 
 ## Research
 
