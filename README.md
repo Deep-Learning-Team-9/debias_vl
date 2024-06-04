@@ -15,6 +15,7 @@ The code has only been tested with the below environment and this all packages c
 - scikit-learn
 - clip
 - transformers
+- CUDA 12.1
 
 ## Procedure
 
@@ -24,7 +25,7 @@ The code has only been tested with the below environment and this all packages c
 
 3. Install the specified packages, run `pip install -r requirements.txt`
 
-4. Move to `./generative`
+4. Change directory to `./generative`
 
 5. Run following or user customized commend, below commends is example
 
