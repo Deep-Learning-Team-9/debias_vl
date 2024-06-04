@@ -20,9 +20,11 @@ The code has only been tested with the below environment and this can set by `re
 
 1. For the `venv` setting, run `pip install -r requirements.txt`
 
-2. Move to `./generative`
+2. Turn vertual environments using `venv`, e.g., `python -m venv test_env`
 
-3. Run following or user customized commend, below commends is example
+3. Move to `./generative`
+
+4. Run following or user customized commend, below commends is example
 
 ```sh
     python main.py --cls Nurse --debias-method singleGender --lam 0 --preprompt A
@@ -49,7 +51,7 @@ The code has only been tested with the below environment and this can set by `re
     - `B`: "This is a"
     - `C`: "Photo cropped face of a"
 
-4. Experiments results will be shown in generative folder
+5. Experiments results will be shown in generative folder
 
 ## Research
 

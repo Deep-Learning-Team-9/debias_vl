@@ -4,4 +4,6 @@ __pycache__/
 *.png
 *.out
 venv
+test_env
 image
+extract_env.py

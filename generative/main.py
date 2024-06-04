@@ -321,7 +321,6 @@ if __name__ == '__main__':
     plt.legend()
     plt.savefig(picture_title)
 
-    exit(1)
 
     # Language Prompt
     prompt = [f"{preprompt} {args.cls}."]
