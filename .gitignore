@@ -3,6 +3,4 @@ __pycache__/
 *.jpg
 *.png
 *.out
-discriminative/datasets/*
-discriminative/embeddings/*
 venv
