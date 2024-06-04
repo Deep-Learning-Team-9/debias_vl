@@ -47,6 +47,9 @@ class Arrow3D(FancyArrowPatch):
 #         np.matmul(z_2, z_3.T) - np.matmul(z_3, z_2.T)
 #     )
 
+# The code aims to remove the gender bias of [Stable Diffusion v2.1](https://huggingface.co/stabilityai/stable-diffusion-2-1).
+# The code is primarily inspired by the huggingface [example](https://github.com/huggingface/diffusers/tree/main/examples).
+
 
 def get_M_single(embeddings, S):
     def get_A(z_i, z_j):

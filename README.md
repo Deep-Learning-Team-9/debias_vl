@@ -1,13 +1,13 @@
 # Mitigating multi-bias in Vision-Language Model with embedding vector redirection
 
-Taehyeok Ha, Kyoosik Lee, Hyeonbeen Park
-Team9
+Team9. Taehyeok Ha, Kyoosik Lee, Hyeonbeen Park 
 
-Extended research of 'Debiasing Vision-Language Models via Biased Prompts'
+This repository is extended research of [Debiasing Vision-Language Models via Biased Prompts](https://github.com/chingyaoc/debias_vl)
 
 ## Environment
 
-The code has only been tested with the environment list below:
+The code has only been tested with the below environment and this can set by `requirements.txt`
+
 - python=3.6
 - torch=1.10.1
 - PIL
@@ -18,30 +18,42 @@ The code has only been tested with the environment list below:
 
 ## Procedure
 
-1. Move to `./generative` which is [Stable Diffusion v2.1](https://huggingface.co/stabilityai/stable-diffusion-2-1)
-2. Run the following script and detail flag explain is that
+1. For the `venv` setting, run `pip install -r requirements.txt`
 
-Flags:
-  - `--cls`: select the target class, e.g., doctor.
-  - `--lam`: hyperparameter lambda of debiasing algorithm
+2. Move to `./generative`
 
-For instance, to reproduce the experiments, run
+3. Run following or customized commend
 
 ```sh
-python main.py --cls doctor --lam 500 --debias-method multiple --preprompt A
-python main.py --cls doctor --lam 500 --debias-method single -- preprompt B
+python main.py --cls Nurse --lam 500 --debias-method multiple --preprompt A
+python main.py --cls Nurse --lam 500 --debias-method singleRace --preprompt B
 ```
 
-preprompt
-- `A: A photo of a`
-- `B: This is a `
-- `C: Photo cropped face of a`
+This is detail explanation of flags
+  - `--cls`: Select the target class
+    - e.g., Florist, HollywoodActor, Doctor
+  - `--lam`: Hyperparameter lambda of debiasing algorithm
+    - high lambda value means high level debiasing
+  - `--debias_method`: Choice multi-vector or single-vector
+    - `singleRace`
+    - `singleGender`
+    - `multiple`
+    - `composite`
+    - `pair`
+  - `--preprompt`: Type of prompt senteces
+    - `A`: "A photo of a"
+    - `B`: "This is a"
+    - `C`: "Photo cropped face of a"
+
 
 ## Research
 
 ### Introduction
 
 abc
+
+The code aims to remove the gender bias of [Stable Diffusion v2.1](https://huggingface.co/stabilityai/stable-diffusion-2-1).
+
 
 ### Related Work
 
