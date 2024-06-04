@@ -25,12 +25,12 @@ The code has only been tested with the below environment and this can set by `re
 3. Run following or user customized commend, below commends is example
 
 ```sh
-    python main.py --cls "Nurse" --debias-method singleGender --lam 0 --preprompt A
-    python main.py --cls "Florist" --debias-method singleRace --lam 500 --preprompt A
-    python main.py --cls "HollywoodActor" --debias-method singleGender --lam 500 --preprompt A
-    python main.py --cls "Nurse" --debias-method pair --lam 500 --preprompt A
-    python main.py --cls "Florist" --debias-method multiple --multiple-param simple --lam 500 --preprompt A
-    python main.py --cls "HollywoodActor" --debias-method multiple --multiple-param composite --lam 500 --preprompt A
+    python main.py --cls Nurse --debias-method singleGender --lam 0 --preprompt A
+    python main.py --cls Florist --debias-method singleRace --lam 500 --preprompt A
+    python main.py --cls HollywoodActor --debias-method singleGender --lam 500 --preprompt A
+    python main.py --cls Nurse --debias-method pair --lam 500 --preprompt A
+    python main.py --cls Florist --debias-method multiple --multiple-param simple --lam 500 --preprompt A
+    python main.py --cls HollywoodActor --debias-method multiple --multiple-param composite --lam 500 --preprompt A
 ```
 
 - This is detail explanation of flags
