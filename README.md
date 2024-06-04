@@ -61,7 +61,7 @@ The code has only been tested with the below environment and this all packages c
 
 Bias in Vision-Language Model (VLM) has been a long issue in the Artificial Intelligence community. An example of known biases are tendency towards certain gender, race, religion, etc. There are existing works to modify the embedding vector of a prompt to mitigate the bias. However, to the best of our knowledge, these works has focused on addressing only one type of bias at a time. Our work further extends this by mitigating multi-bias at the same time.
 
-The code aims to remove the gender bias of [Stable Diffusion v2.1](https://huggingface.co/stabilityai/stable-diffusion-2-1).
+The code aims to remove the multi-bias of [Stable Diffusion v2.1](https://huggingface.co/stabilityai/stable-diffusion-2-1).
 
 Keywords: Vision-Language pre-trained model, Debiasing, Ethical AI
 
